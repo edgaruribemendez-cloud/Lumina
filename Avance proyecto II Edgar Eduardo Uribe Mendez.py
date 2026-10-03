@@ -124,7 +124,7 @@ class LimpiezaDatos:
         plt.xlabel('Demanda en unidades')
         plt.ylabel('Frecuencia')
         plt.tight_layout()
-        plt.savefig(Path(__file__).parent / config.carpeta_resultados / '01_distribucion_demanda.png', dpi=150)
+        plt.savefig(Path(__file__).parent / config.carpeta_resultados / 'distribucion_demanda.png', dpi=150)
         #plt.show()
         return datos
 
@@ -302,9 +302,6 @@ class EntrenadorModelo:
         return r2
 
 #Genera metricas de modelos
-    def generar_metricas_modelo(self, mae, rmse, r2):
-        df = pd.DataFrame({'MAE':mae, 'RMSE':rmse, 'R2':r2}, index=[0])
-        df.to_csv(self.ruta_guardado / 'metricas_modelos.csv', index=False)
 
     def generar_csv_calidad_inicial(self,datos):
         datos.to_csv(self.ruta_guardado / 'calidad_inicial.csv', index=False)
@@ -494,13 +491,8 @@ if __name__ == "__main__":
         preparador = PreparadorDatos()
         datos = cargador.cargar("C:\\" + config.nombre_archivo)
         cargador.generar_carpeta_lumina()
-        
         datos_limpiar = cargador.validar_columnas(datos)
-        #print("\nCalidad inicial de los datos:")
-        #print(datos_limpiar)
         datos_limpios = limpieza.limpiar_datos(datos)
-        #print("\nDatos limpios:")
-        #print(datos_limpios)
         explorador.graficar_distribucion(datos_limpios)
 
         X_train, X_test, y_train, y_test = entrenador.separar_entrenamiento(datos_limpios)
@@ -508,12 +500,9 @@ if __name__ == "__main__":
         nombres = preparador.preprocesador.get_feature_names_out()
         modelo, linea_base_media = entrenador.entrenar_modelo(X_train_transformado, y_train, nombres)
 
-        
-       
         entrenador.generar_csv_calidad_inicial(datos_limpiar)
         entrenador.generar_csv_bitacora_limpieza(datos_limpios)
         y_pred, mae, rmse, r2 = entrenador.comparacion_modelos(X_test_transformado, modelo, y_test)
-        entrenador.generar_metricas_modelo(mae, rmse, r2)
         predicciones = pd.DataFrame({"real": y_test.to_numpy(), "prediccion": y_pred})
         entrenador.generar_csv_predicciones(predicciones)
         entrenador.generar_reporte_txt(mae, rmse, r2, datos_limpios, y_test)
