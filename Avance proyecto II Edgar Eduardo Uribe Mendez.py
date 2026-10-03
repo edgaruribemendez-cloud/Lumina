@@ -8,7 +8,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.dummy import DummyRegressor
 from sklearn.tree import plot_tree
-
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -276,6 +276,45 @@ class EntrenadorModelo:
 
 
         return modelo, linea_base_media
+
+    def generar_matriz_confusion_demanda(self, y_real, y_pred, limites):
+   
+
+        etiquetas = ["Baja", "Media", "Alta"]
+        bins = [-np.inf, *limites, np.inf]
+
+        real_categoria = pd.cut(
+            np.asarray(y_real), bins=bins, labels=etiquetas, right=False, 
+        )
+        pred_categoria = pd.cut(
+            np.asarray(y_pred), bins=bins, labels=etiquetas, right=False
+        )
+
+        matriz = confusion_matrix(
+            real_categoria,
+            pred_categoria,
+            labels=etiquetas
+        )
+
+        fig, ax = plt.subplots(figsize=(6, 5))
+        ConfusionMatrixDisplay(
+            confusion_matrix=matriz,
+            display_labels=etiquetas
+        ).plot(ax=ax, cmap="Blues", values_format="d", colorbar=False)
+
+        ax.set_xlabel("Predicción")
+        ax.set_ylabel("Real")
+        ax.set_title("Matriz de confusión de demanda")
+      
+        fig.tight_layout()
+        fig.savefig(self.ruta_guardado / "matriz_confusion_demanda.png", dpi=150)
+        plt.close(fig)
+
+        return pd.DataFrame(
+            matriz,
+            index=[f"Real {etiqueta}" for etiqueta in etiquetas],
+            columns=[f"Predicción {etiqueta}" for etiqueta in etiquetas]
+        )
 #Calcular mae
     def calcular_mae(self, modelo, X_test, y_test):
         from sklearn.metrics import mean_absolute_error
@@ -434,12 +473,10 @@ RECOMENDACIONES
     def comparacion_modelos(self, X_test_transformado, modelo, y_test):
         
         y_pred = modelo.predict(X_test_transformado)
-        print("\nRandom Forest:")
         mae = entrenador.calcular_mae(modelo, X_test_transformado, y_test)
         rmse = entrenador.calcular_rmse(modelo, X_test_transformado, y_test)
         r2 = entrenador.calcular_r2(modelo, X_test_transformado, y_test)
 
-        print("\nLínea base (promedio):")
         mae_linea_base = entrenador.calcular_mae(linea_base_media, X_test_transformado, y_test)
         rmse_linea_base = entrenador.calcular_rmse(linea_base_media, X_test_transformado, y_test)
         r2_linea_base = entrenador.calcular_r2(linea_base_media, X_test_transformado, y_test)
@@ -449,8 +486,6 @@ RECOMENDACIONES
             {"Modelo": "Línea base (promedio)", "MAE": mae_linea_base,
              "RMSE": rmse_linea_base, "R2": r2_linea_base}
         ])
-        print("\nComparación de modelos:")
-        print(comparacion_modelos.to_string(index=False))
 
         comparacion = f""" 
 RANDOM FOREST:
@@ -507,4 +542,5 @@ if __name__ == "__main__":
         entrenador.generar_csv_predicciones(predicciones)
         entrenador.generar_reporte_txt(mae, rmse, r2, datos_limpios, y_test)
         entrenador.recomendar_inventario(X_test, y_test, y_pred, config.margen_seguridad)
+        entrenador.generar_matriz_confusion_demanda(y_test, y_pred, limites=[25, 70])
         entrenador.generar_zip_resultados()

@@ -3,9 +3,9 @@
 
 ## Uso de Framework Lumina
 
--El framework fue realizado en microsoft visual studio code, por lo que para ejecutarlo basta con cargar el script en la herramienta y ejecutarlo
--El script fue creado para la versión 3.14.7 de Python
--Los resultados finales se arrojaran en la carpeta que tenga como base en el proyecto, dentro del zip *Resultados_Lumina.zip*
+### -El framework fue realizado en microsoft visual studio code, por lo que para ejecutarlo basta con cargar el script en la herramienta y ejecutarlo
+### -El script fue creado para la versión 3.14.7 de Python
+### -Los resultados finales se arrojaran en la carpeta que tenga como base en el proyecto, dentro del zip *Resultados_Lumina.zip*
 
 ## Configuración de funcionamiento
 
