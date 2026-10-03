@@ -1,5 +1,12 @@
 # Documentación breve del sistema Lúmina
 
+
+## Uso de Framework Lumina
+
+-El framework fue realizado en microsoft visual studio code, por lo que para ejecutarlo basta con cargar el script en la herramienta y ejecutarlo
+-El script fue creado para la versión 3.14.7 de Python
+-Los resultados finales se arrojaran en la carpeta que tenga como base en el proyecto, dentro del zip *Resultados_Lumina.zip*
+
 ## Configuración de funcionamiento
 
 La clase `ConfiguracionLumina` concentra los parámetros principales: archivo Excel `Lumina_Datos_Operativos.xlsx`, hoja `Datos`, variable objetivo `demanda_unidades`, semilla aleatoria `42`, división de prueba del `20 %`, margen de seguridad de inventario del `10 %` y carpeta de resultados `resultados_lumina`.
