@@ -479,7 +479,9 @@ LINEA BASE (PROMEDIO):
         return y_pred, mae, rmse, r2
 
     def generar_zip_resultados(self):
-        shutil.make_archive('resultados_lumina', 'zip', self.ruta_guardado)
+        print(self.ruta_guardado)
+        ruta_zip = self.ruta_guardado.parent / "Resultados_Lumina"
+        shutil.make_archive(str(ruta_zip), "zip", root_dir=str(self.ruta_guardado))
         
 if __name__ == "__main__":
         print('Python:', sys.version)
